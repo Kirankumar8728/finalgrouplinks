@@ -1,0 +1,6 @@
+{
+  "summary":  "Implementation plan to completely purge all auto-generated seed groups, disconnect all seed generator modules, clean existing storage to retain only real user-submitted groups, and display a polished empty state with a submit community button when categories or the directory has zero groups.",
+  "updatedAt":  "2026-10-31T16:59:18.308199367Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
