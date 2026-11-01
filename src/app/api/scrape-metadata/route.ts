@@ -69,10 +69,15 @@ export async function POST(req: NextRequest) {
 
     const result = await scrapeGroupMetadataDirect(url.trim(), detectedPlatform);
 
+    if (!result.success) {
+      console.error(`[ScrapeMetadata API] Scraping failed for ${url.trim()}:`, result.error);
+    }
+    
     // Explicit WhatsApp validation
     if (detectedPlatform === 'whatsapp' && result && result.success) {
       const validation = validateWhatsAppMetadata(result.title, result.imageUrl);
       if (!validation.isValid) {
+        console.warn(`[ScrapeMetadata API] WhatsApp validation failed for ${url.trim()}:`, validation.error);
         return NextResponse.json({ success: false, isExpired: true, error: validation.error }, { status: 200, headers: NO_CACHE_HEADERS });
       }
     }

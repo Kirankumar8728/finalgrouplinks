@@ -240,6 +240,8 @@ const GroupCardComponent: React.FC<GroupCardProps> = ({
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 blur-[1.5px] opacity-75"
           onError={(e) => {
             const target = e.currentTarget;
+            console.warn(`[Image Load Failed] URL: ${target.src}, Group: ${group.title}`);
+            
             if (!target.dataset.retried) {
               target.dataset.retried = 'true';
               target.src = getCategoryFallbackImage(group.category, true, group.title);

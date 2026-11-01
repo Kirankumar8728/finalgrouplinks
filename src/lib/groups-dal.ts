@@ -170,7 +170,7 @@ export function parseMysqlGroupRow(row: any): Group {
     language: row.language || 'English',
     region: row.region || 'Global',
     customTags,
-    imageUrl: row.imageUrl || row.icon_url || row.image_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(row.slug || row.id)}&backgroundColor=b6e3f4,c0aede,d1d4f9`,
+    imageUrl: row.imageUrl || row.icon_url || row.image_url || resolveValidGroupImage(undefined, row.category, row.title, false),
     bannerUrl: row.bannerUrl || row.banner_url || undefined,
     memberCount: Number(row.memberCount ?? row.member_count) || 0,
     growthRate: Number(row.growthRate ?? row.growth_rate) || 12.5,
