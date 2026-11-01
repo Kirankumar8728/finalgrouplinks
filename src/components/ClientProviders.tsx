@@ -71,11 +71,14 @@ class ClientProvidersErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   }
 }
 
+import { Toaster } from 'react-hot-toast';
+
 export function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <ClientProvidersErrorBoundary>
       <AuthProvider>
         <WebVitalsMonitor />
+        <Toaster />
         {children}
       </AuthProvider>
     </ClientProvidersErrorBoundary>

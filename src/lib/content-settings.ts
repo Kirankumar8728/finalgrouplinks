@@ -6,6 +6,10 @@ export interface ContentSettings {
   substitutionCategory: string;
   allowUserGroupUpdates: boolean; // Master admin toggle to enable/disable user group updates
   userUpdateCooldownDays: number; // 7 days (1 update per week)
+  siteTitle: string;
+  detailTitleTemplate: string;
+  detailDescriptionTemplate: string;
+  minDescriptionWords: number;
   updatedAt: string;
   updatedBy: string;
 }
@@ -23,6 +27,10 @@ function getDefaultSettings(): ContentSettings {
     substitutionCategory: 'Tech & Programming',
     allowUserGroupUpdates: true,
     userUpdateCooldownDays: 7,
+    siteTitle: 'Group Links',
+    detailTitleTemplate: '(Group Title) - Group Links',
+    detailDescriptionTemplate: '(Group Description)',
+    minDescriptionWords: 10,
     updatedAt: new Date().toISOString(),
     updatedBy: 'system',
   };
@@ -75,6 +83,10 @@ function loadSettingsFromDisk(): ContentSettings {
       substitutionCategory: typeof parsed.substitutionCategory === 'string' ? parsed.substitutionCategory : getDefaultSettings().substitutionCategory,
       allowUserGroupUpdates: typeof parsed.allowUserGroupUpdates === 'boolean' ? parsed.allowUserGroupUpdates : getDefaultSettings().allowUserGroupUpdates,
       userUpdateCooldownDays: typeof parsed.userUpdateCooldownDays === 'number' && parsed.userUpdateCooldownDays > 0 ? parsed.userUpdateCooldownDays : getDefaultSettings().userUpdateCooldownDays,
+      siteTitle: typeof parsed.siteTitle === 'string' ? parsed.siteTitle : getDefaultSettings().siteTitle,
+      detailTitleTemplate: typeof parsed.detailTitleTemplate === 'string' ? parsed.detailTitleTemplate : getDefaultSettings().detailTitleTemplate,
+      detailDescriptionTemplate: typeof parsed.detailDescriptionTemplate === 'string' ? parsed.detailDescriptionTemplate : getDefaultSettings().detailDescriptionTemplate,
+      minDescriptionWords: typeof parsed.minDescriptionWords === 'number' && parsed.minDescriptionWords >= 0 ? parsed.minDescriptionWords : getDefaultSettings().minDescriptionWords,
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       updatedBy: parsed.updatedBy || 'system',
     };

@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan to completely purge all auto-generated seed groups, disconnect all seed generator modules, clean existing storage to retain only real user-submitted groups, and display a polished empty state with a submit community button when categories or the directory has zero groups.",
-  "updatedAt":  "2026-10-31T16:59:18.308199367Z",
+  "summary":  "Revised implementation plan for dynamic SEO templates, a downloadable backup utility, and a configurable minimum description word count setting for user submissions.",
+  "updatedAt":  "2026-11-01T22:35:13.072018480Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

@@ -221,6 +221,12 @@ export async function POST(req: NextRequest) {
     }
     cleanDesc = sanitizeInput(cleanDesc).slice(0, 5000);
 
+    const { minDescriptionWords } = getContentSettings();
+    if (cleanDesc.split(/\s+/).filter(w => w.length > 0).length < minDescriptionWords) {
+      return NextResponse.json({ success: false, error: `Description must be at least ${minDescriptionWords} words.` }, { status: 400, headers: REALTIME_NO_CACHE_HEADERS });
+    }
+
+
     let cleanCategory = body.isNsfw
       ? 'Adult / 18+'
       : (body.category || fetchedMetadata?.suggestedCategory || 'General');

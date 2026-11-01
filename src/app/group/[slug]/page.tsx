@@ -5,6 +5,8 @@ import { getGroupBySlug, getRelatedGroups } from '@/src/lib/groups-dal';
 import { buildPageMetadata, generateGroupJsonLd, generateBreadcrumbsJsonLd } from '@/src/lib/rank';
 import { GroupDetailPage } from '@/src/components/GroupDetailPage';
 import { getGroupUrlPath, categoryToSlug, isAdultGroup } from '@/src/utils/helpers';
+import { getContentSettings } from '@/src/lib/content-settings';
+import { SEOManager } from '@/src/lib/seo-manager';
 
 // Enable Incremental Static Regeneration (ISR) so Hostinger / LiteSpeed serve pages in <30ms from cache
 export const revalidate = 60;
@@ -22,6 +24,7 @@ const getCachedGroup = cache(async (slug: string) => {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const group = await getCachedGroup(slug);
+  const settings = getContentSettings();
 
   if (!group) {
     return buildPageMetadata({
@@ -32,14 +35,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const canonicalPath = getGroupUrlPath(group);
+  const seo = SEOManager.resolveDetail(group, settings);
 
   return buildPageMetadata({
-    title: `${group.title} — Join ${group.platform.toUpperCase()} Group`,
-    description:
-      (group.description && group.description.trim())
-        ? (group.description.length > 160 ? group.description.slice(0, 157) + '...' : group.description)
-        : group.metaDescription ||
-          `Join ${group.title} on ${group.platform}. Discover active members, verified links, and rules.`,
+    title: seo.title,
+    description: seo.description.length > 160 ? seo.description.slice(0, 157) + '...' : seo.description,
     imageUrl: group.imageUrl,
     pathname: canonicalPath,
     keywords: group.rankKeywords || [group.title, `${group.platform} group`, group.category],
