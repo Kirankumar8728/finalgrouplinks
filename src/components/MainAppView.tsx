@@ -354,13 +354,13 @@ export function MainAppView({
           newItems.forEach(item => map.set(item.id, item));
           const combined = Array.from(map.values());
           const sorted = sortGroupsWithSticky(combined, activeSort, isAdultContext);
-          setHasMoreGroups(sorted.length < totalCount);
+          setHasMoreGroups(combined.length < totalCount);
           return sorted;
         });
       } else {
         const sorted = sortGroupsWithSticky(newItems, activeSort, isAdultContext);
         setGroups(sorted);
-        setHasMoreGroups(sorted.length < totalCount);
+        setHasMoreGroups(newItems.length < totalCount);
       }
     } catch (err: any) {
       // Only display the error banner if no groups are currently visible to the visitor
@@ -1088,8 +1088,8 @@ export function MainAppView({
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {groups.map((group, index) => {
-                  const shouldShowAd = (index === 2 || (index > 2 && (index - 2) % 10 === 0)) && !hideAds;
-                  const adIndexNumber = index === 2 ? 0 : Math.floor((index - 2) / 10);
+                  const shouldShowAd = (index + 1) % 9 === 0 && !hideAds;
+                  const adIndexNumber = Math.floor((index + 1) / 9) - 1;
 
                   return (
                     <React.Fragment key={group.id}>

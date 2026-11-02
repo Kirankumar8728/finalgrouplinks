@@ -94,7 +94,13 @@ export const AdDisplay: React.FC<AdDisplayProps> = ({
             <Megaphone className="w-3 h-3 text-indigo-500" />
             <span>Sponsored Ad</span>
           </span>
-          <span className="font-medium text-neutral-400">{ad.sponsorName || 'Network Sponsor'}</span>
+          <span className="font-medium text-neutral-400">
+            {ad.sponsorName || 'Network Sponsor'}
+            {/* Added for Admin ID visibility */}
+            {typeof window !== 'undefined' && localStorage.getItem('nexus_admin_session') && (
+              <span className="ml-2 px-1 rounded bg-indigo-500 text-white text-[9px]">#{ad.id}</span>
+            )}
+          </span>
         </div>
         <div ref={customCodeRef} className="p-3 overflow-x-auto min-h-[60px]" />
       </div>
