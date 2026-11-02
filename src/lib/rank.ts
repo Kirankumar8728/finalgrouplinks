@@ -328,6 +328,11 @@ export function generateGroupJsonLd(group: Group) {
       headline: group.title,
       articleBody: group.description,
       url: groupUrl,
+      author: {
+        '@type': 'Person',
+        name: group.authorName || 'Anonymous Visitor',
+      },
+      datePublished: group.publishedAt || group.createdAt,
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: group.rating && group.rating > 0 ? group.rating : 4.8,
