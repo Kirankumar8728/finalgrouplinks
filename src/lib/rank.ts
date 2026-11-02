@@ -333,13 +333,6 @@ export function generateGroupJsonLd(group: Group) {
         name: group.authorName || 'Anonymous Visitor',
       },
       datePublished: group.publishedAt || group.createdAt,
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: group.rating && group.rating > 0 ? group.rating : 4.8,
-        reviewCount: group.ratingCount && group.ratingCount > 0 ? group.ratingCount : Math.max(5, (group.upvotes || 0) + 12),
-        bestRating: 5,
-        worstRating: 1,
-      },
       interactionStatistic: [
         {
           '@type': 'InteractionCounter',
