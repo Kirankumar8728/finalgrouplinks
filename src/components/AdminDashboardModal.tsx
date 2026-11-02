@@ -127,6 +127,7 @@ import { AdminCommentsManager } from './AdminCommentsManager';
 import { AdminPromotionsManager } from './AdminPromotionsManager';
 import { AdminNotificationsManager } from './AdminNotificationsManager';
 import { PushSubscriberBackupUtility } from './PushSubscriberBackupUtility';
+import { BackgroundTasksManager } from './BackgroundTasksManager';
 
 interface AdminDashboardModalProps {
   isOpen: boolean;
@@ -149,7 +150,7 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
   onAddGroup,
   onLogout,
 }) => {
-  const [activeTab, setActiveTab] = useState<'groups' | 'adsenseSafety' | 'promotions' | 'userCredits' | 'rewards' | 'directFilter' | 'keywords' | 'restrictedKeywords' | 'comments' | 'ads' | 'adsTxt' | 'customScripts' | 'security' | 'twofactor' | 'backup' | 'bulkImport' | 'notifications' | 'healthAutomation' | 'dmcaReviews'>('groups');
+  const [activeTab, setActiveTab] = useState<'groups' | 'adsenseSafety' | 'promotions' | 'userCredits' | 'rewards' | 'directFilter' | 'keywords' | 'restrictedKeywords' | 'comments' | 'ads' | 'adsTxt' | 'customScripts' | 'security' | 'twofactor' | 'backup' | 'bulkImport' | 'notifications' | 'healthAutomation' | 'dmcaReviews' | 'backgroundTasks'>('groups');
 
   // AdSense Safe Mode & Adult Content Visibility State
   const [hideAdultContent, setHideAdultContent] = useState<boolean>(true);
@@ -2418,6 +2419,17 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
             <Layers className="w-4 h-4" />
             <span>Manage Groups ({groups.length})</span>
           </button>
+          <button
+            onClick={() => setActiveTab('backgroundTasks')}
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-all whitespace-nowrap ${
+              activeTab === 'backgroundTasks'
+                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 font-bold'
+                : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-300'
+            }`}
+          >
+            <RefreshCw className="w-4 h-4" />
+            <span>Background Tasks</span>
+          </button>
 
           <button
             onClick={() => setActiveTab('dmcaReviews')}
@@ -2706,6 +2718,12 @@ export const AdminDashboardModal: React.FC<AdminDashboardModalProps> = ({
         )}
 
         {/* Tab 1: Groups Management Table & Sticky Promoter */}
+        {activeTab === 'backgroundTasks' && (
+          <div className="p-6">
+            <BackgroundTasksManager />
+          </div>
+        )}
+        
         {activeTab === 'groups' && (
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
             
