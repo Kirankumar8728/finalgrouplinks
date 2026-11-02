@@ -21,6 +21,7 @@ import { Group, GroupComment } from '@/src/types';
 import { getPool } from '@/src/lib/db';
 import { parseMysqlGroupRow } from '@/src/lib/groups-dal';
 import { generateSlug } from '@/src/utils/helpers';
+import { uploadRawToR2 } from '@/src/lib/r2-storage';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -102,15 +103,21 @@ export async function GET(req: NextRequest) {
       // Add the JSON data
       zip.addFile('backup_data.json', Buffer.from(JSON.stringify(backupData, null, 2)));
       
-      // Add physical images from public/image and public/images
-      const uploadDir = path.join(process.cwd(), 'public', 'image');
-      const legacyUploadDir = path.join(process.cwd(), 'public', 'images');
-      
-      if (fs.existsSync(uploadDir)) {
-        zip.addLocalFolder(uploadDir, 'public_image');
-      }
-      if (fs.existsSync(legacyUploadDir)) {
-        zip.addLocalFolder(legacyUploadDir, 'public_images_legacy');
+      // Add physical images by downloading from source (Hostinger/R2)
+      // We will create a map of image URLs to their content in the zip
+      for (const group of db) {
+        if (group.imageUrl && group.imageUrl.startsWith('http')) {
+          try {
+            const res = await fetch(group.imageUrl);
+            if (res.ok) {
+              const buffer = await res.arrayBuffer();
+              const fileName = group.imageUrl.split('/').pop() || `${group.id}.webp`;
+              zip.addFile(`images/${fileName}`, Buffer.from(buffer));
+            }
+          } catch (err) {
+            console.warn(`[Backup] Failed to download image for group ${group.id}:`, group.imageUrl);
+          }
+        }
       }
       
       const zipBuffer = zip.toBuffer();
@@ -161,25 +168,13 @@ export async function POST(req: NextRequest) {
       mode = body.mode === 'replace' ? 'replace' : 'merge';
 
       // Restore physical images
-      const uploadDir = path.join(process.cwd(), 'public', 'image');
-      const legacyUploadDir = path.join(process.cwd(), 'public', 'images');
-
-      zipEntries.forEach(entry => {
-        if (entry.entryName.startsWith('public_image/') && !entry.isDirectory) {
-          const relativePath = entry.entryName.replace('public_image/', '');
-          const targetPath = path.join(uploadDir, relativePath);
-          const dir = path.dirname(targetPath);
-          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-          fs.writeFileSync(targetPath, entry.getData());
+      
+      for (const entry of zipEntries) {
+        if (entry.entryName.startsWith('images/') && !entry.isDirectory) {
+          const fileName = entry.entryName.replace('images/', '');
+          await uploadRawToR2(`groups/${fileName}`, entry.getData());
         }
-        if (entry.entryName.startsWith('public_images_legacy/') && !entry.isDirectory) {
-          const relativePath = entry.entryName.replace('public_images_legacy/', '');
-          const targetPath = path.join(legacyUploadDir, relativePath);
-          const dir = path.dirname(targetPath);
-          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-          fs.writeFileSync(targetPath, entry.getData());
-        }
-      });
+      }
     } else {
       body = await req.json();
       mode = body.mode === 'replace' ? 'replace' : 'merge';

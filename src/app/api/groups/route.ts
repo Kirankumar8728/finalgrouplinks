@@ -9,7 +9,7 @@ import { resolveAuthContext } from '@/src/lib/auth-helpers';
 import { requireAdmin } from '@/src/lib/admin-auth';
 import { checkRateLimit, rateLimitResponse } from '@/src/lib/rate-limit';
 import { REALTIME_NO_CACHE_HEADERS } from '@/src/lib/cache-control';
-import { isAdultContentHidden, isUserGroupUpdatesAllowed, getUserUpdateCooldownMs } from '@/src/lib/content-settings';
+import { isAdultContentHidden, isUserGroupUpdatesAllowed, getUserUpdateCooldownMs, getContentSettings } from '@/src/lib/content-settings';
 import { uploadImageToR2 } from '@/src/lib/r2-storage';
 import { getCategoryFallbackImage } from '@/src/utils/categoryImages';
 

@@ -31,6 +31,7 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) return <div>Loading...</div>;
+  if (!settings) return <div>Error loading settings.</div>;
 
   return (
     <div className="p-6 max-w-2xl mx-auto">

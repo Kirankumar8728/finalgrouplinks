@@ -1,0 +1,60 @@
+;;
+;; Domain:     grouplinks.app.
+;; Exported:   2026-11-02 01:40:20
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+grouplinks.app	3600	IN	SOA	cleo.ns.cloudflare.com. dns.cloudflare.com. 2054525022 10000 2400 604800 3600
+
+;; NS Records
+grouplinks.app.	86400	IN	NS	cleo.ns.cloudflare.com.
+grouplinks.app.	86400	IN	NS	oaklyn.ns.cloudflare.com.
+
+;; A Records
+ftp.grouplinks.app.	1	IN	A	145.79.25.162 ; cf_tags=cf-proxied:true
+grouplinks.app.	1	IN	A	145.79.25.162 ; cf_tags=cf-proxied:true
+grouplinks.app.	1	IN	A	147.79.79.157 ; cf_tags=cf-proxied:true
+grouplinks.app.	1	IN	A	88.223.87.196 ; cf_tags=cf-proxied:true
+
+;; AAAA Records
+grouplinks.app.	1	IN	AAAA	2a02:4780:4b:d89c:aa80:c595:bf2d:f784 ; cf_tags=cf-proxied:true
+grouplinks.app.	1	IN	AAAA	2a02:4780:4d:d026:d0f1:8398:1ad5:bde7 ; cf_tags=cf-proxied:true
+
+;; CNAME Records
+adult.grouplinks.app.	1	IN	CNAME	grouplinks.app. ; cf_tags=cf-proxied:true
+autoconfig.grouplinks.app.	1	IN	CNAME	autoconfig.mail.hostinger.com. ; cf_tags=cf-proxied:true
+autodiscover.grouplinks.app.	1	IN	CNAME	autodiscover.mail.hostinger.com. ; cf_tags=cf-proxied:true
+cdn.grouplinks.app.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+hostingermail-a._domainkey.grouplinks.app.	1	IN	CNAME	hostingermail-a.dkim.mail.hostinger.com. ; cf_tags=cf-proxied:true
+hostingermail-b._domainkey.grouplinks.app.	1	IN	CNAME	hostingermail-b.dkim.mail.hostinger.com. ; cf_tags=cf-proxied:true
+hostingermail-c._domainkey.grouplinks.app.	1	IN	CNAME	hostingermail-c.dkim.mail.hostinger.com. ; cf_tags=cf-proxied:true
+www.grouplinks.app.	1	IN	CNAME	www.grouplinks.app.cdn.hstgr.net. ; cf_tags=cf-proxied:true
+
+;; MX Records
+grouplinks.app.	1	IN	MX	5 mx1.hostinger.com.
+grouplinks.app.	1	IN	MX	10 mx2.hostinger.com.
+
+;; TXT Records
+_dmarc.grouplinks.app.	1	IN	TXT	"v=DMARC1; p=none"
+grouplinks.app.	1	IN	TXT	"google-site-verification=Jz53j0Tvz8XC9mpGOZj-C_3tX7I5FKRb_D43kFixQv8"
+grouplinks.app.	1	IN	TXT	"v=spf1 include:_spf.mail.hostinger.com ~all"

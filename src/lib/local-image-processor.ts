@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { computeImageHash, isKnownAdultImageHash } from './image-hash-db';
+import { uploadToR2 } from './r2';
 
 export interface ProcessedImageResult {
   success: boolean;
@@ -106,7 +107,7 @@ export async function processAndStoreImageLocally(
 
     // Aggressive WebP compression & 600x600 thumbnail resizing using sharp (larger for banners)
     // Re-encoding through sharp guarantees any embedded scripts/malicious metadata are stripped.
-    const resizedWebpBuffer = await sharp(inputBuffer)
+    let resizedWebpBuffer = await sharp(inputBuffer)
       .rotate()
       .resize(600, 600, {
         fit: 'cover',
@@ -115,33 +116,31 @@ export async function processAndStoreImageLocally(
       })
       .webp({ quality: 85, effort: 4, lossless: false })
       .toBuffer();
+    
+    // Ensure file size < 10KB
+    let quality = 85;
+    while (resizedWebpBuffer.length > 10 * 1024 && quality > 10) {
+      quality -= 10;
+      const tempResizedWebpBuffer = await sharp(inputBuffer)
+        .rotate()
+        .resize(300, 300, { // Reduce size for compression
+          fit: 'cover',
+          position: 'attention',
+          withoutEnlargement: true,
+        })
+        .webp({ quality: quality, effort: 4, lossless: false })
+        .toBuffer();
+      resizedWebpBuffer = tempResizedWebpBuffer;
+    }
 
-    // Store in public/image/{platform}/upload/{title}-{shortHash}.webp
-    // format requested: "grouplinks.app/image/{platform}/upload/{title}.webp"
-    // We add a short hash to ensure unique filenames and fix browser caching issues when updating images.
+    // Upload to Cloudflare R2
     const cleanPlatform = sanitizeTitle(platform || 'other');
     const cleanTitle = sanitizeTitle(groupTitle || 'group');
     const shortHash = imageHash ? imageHash.substring(0, 8) : crypto.randomBytes(4).toString('hex');
-    
-    const dirPath = path.join(process.cwd(), 'public', 'image', cleanPlatform, 'upload');
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath, { recursive: true });
-    }
-
     const fileName = `${cleanTitle}-${shortHash}.webp`;
-    const filePath = path.join(dirPath, fileName);
-    fs.writeFileSync(filePath, resizedWebpBuffer);
-
-    // Also mirror to legacy public/images/{platform}/{title}/image1.webp for backward compatibility
-    try {
-      const legacyDirPath = path.join(process.cwd(), 'public', 'images', cleanPlatform, cleanTitle);
-      if (!fs.existsSync(legacyDirPath)) {
-        fs.mkdirSync(legacyDirPath, { recursive: true });
-      }
-      fs.writeFileSync(path.join(legacyDirPath, 'image1.webp'), resizedWebpBuffer);
-    } catch {}
-
-    const publicUrl = `/image/${cleanPlatform}/upload/${fileName}`;
+    const key = `image/${cleanPlatform}/upload/${fileName}`;
+    
+    const publicUrl = await uploadToR2(key, resizedWebpBuffer);
 
     return {
       success: true,
@@ -161,23 +160,19 @@ export async function processAndStoreImageLocally(
 export async function generateFallbackImage(platform: string, groupTitle: string): Promise<ProcessedImageResult> {
   const cleanPlatform = sanitizeTitle(platform || 'whatsapp');
   const cleanTitle = sanitizeTitle(groupTitle || 'group');
-  const dirPath = path.join(process.cwd(), 'public', 'images', cleanPlatform, cleanTitle);
   
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-
   const initials = groupTitle.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   const svg = `<svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="#4f46e5" />
     <text x="50%" y="50%" font-family="sans-serif" font-size="60" fill="white" text-anchor="middle" dy=".3em">${initials}</text>
   </svg>`;
   
-  const filePath = path.join(dirPath, 'image1.webp');
-  await sharp(Buffer.from(svg)).webp().toFile(filePath);
+  const webpBuffer = await sharp(Buffer.from(svg)).webp().toBuffer();
+  const key = `images/${cleanPlatform}/${cleanTitle}/image1.webp`;
+  const publicUrl = await uploadToR2(key, webpBuffer);
   
   return {
     success: true,
-    imageUrl: `/images/${cleanPlatform}/${cleanTitle}/image1.webp`
+    imageUrl: publicUrl
   };
 }
