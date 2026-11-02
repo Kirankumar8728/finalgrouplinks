@@ -121,16 +121,15 @@ export async function processAndStoreImageLocally(
     let quality = 85;
     while (resizedWebpBuffer.length > 10 * 1024 && quality > 10) {
       quality -= 10;
-      const tempResizedWebpBuffer = await sharp(inputBuffer)
+      resizedWebpBuffer = await sharp(inputBuffer)
         .rotate()
-        .resize(300, 300, { // Reduce size for compression
+        .resize(300, 300, {
           fit: 'cover',
           position: 'attention',
           withoutEnlargement: true,
         })
         .webp({ quality: quality, effort: 4, lossless: false })
         .toBuffer();
-      resizedWebpBuffer = tempResizedWebpBuffer;
     }
 
     // Upload to Cloudflare R2

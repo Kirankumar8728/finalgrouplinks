@@ -1,4 +1,4 @@
-import { getGroups } from './src/lib/groups-dal.ts';
+import { getGroups } from './src/lib/groups-dal';
 
 async function inspectImageLinks() {
   const result = await getGroups({ limit: 5 });
