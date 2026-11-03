@@ -5,6 +5,7 @@ import { getSiteUrl, generateWebSiteJsonLd, generateOrganizationJsonLd } from '@
 import { getCustomScriptsServer } from '@/src/lib/server-scripts-persistence';
 import AppProviders from '@/src/components/AppProviders';
 import { CookieConsentBanner } from '@/src/components/CookieConsentBanner';
+import { GlobalSearchProvider } from '@/src/components/GlobalSearchProvider';
 
 function getSanitizedGaId(customId?: string): string | null {
   const candidate = (
@@ -145,8 +146,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
         <AppProviders>
-          {children}
-          <CookieConsentBanner />
+          <GlobalSearchProvider>
+            {children}
+            <CookieConsentBanner />
+          </GlobalSearchProvider>
         </AppProviders>
       </body>
     </html>

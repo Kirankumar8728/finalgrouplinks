@@ -1,0 +1,10 @@
+# GroupLinks
+GroupLinks is a comprehensive directory of community groups across various platforms like Telegram, Discord, and WhatsApp.
+
+## Features
+- Extensive directory of groups
+- Advanced search and filtering
+- Platform-specific indexing
+- Community engagement tools
+
+For more information, please visit https://grouplinks.app

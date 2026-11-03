@@ -444,7 +444,6 @@ export async function getGroups(options: GetGroupsOptions = {}): Promise<Paginat
     mysqlResult.groups = isAdultMode 
       ? mysqlResult.groups.filter(g => isAdultGroup(g))
       : mysqlResult.groups.filter(g => !isAdultGroup(g));
-    mysqlResult.total = mysqlResult.groups.length;
     
     return mysqlResult;
   }
@@ -458,7 +457,6 @@ export async function getGroups(options: GetGroupsOptions = {}): Promise<Paginat
     storeResult.groups = isAdultMode
       ? storeResult.groups.filter(g => isAdultGroup(g))
       : storeResult.groups.filter(g => !isAdultGroup(g));
-    storeResult.total = storeResult.groups.length;
   }
   return storeResult;
 }
